@@ -20,7 +20,13 @@ if [ ! -d "$CACHE" ]; then
   fi
   rm -rf "$CACHE"
   mkdir -p "$CACHE"
-  unzip -q "$ZIP" -d "$CACHE"
+  # mac 用 unzip;Windows runner(Git Bash)无 unzip,用 python zipfile
+  if command -v unzip >/dev/null 2>&1; then
+    unzip -q "$ZIP" -d "$CACHE"
+  else
+    PY=$(command -v python3 || command -v python)
+    "$PY" -m zipfile -e "$ZIP" "$CACHE/"
+  fi
 fi
 
 OUT="dist/ESClient-win-x64"
@@ -50,7 +56,12 @@ fi
 
 PKG="dist/ESClient-v${VERSION}-win-x64-portable.zip"
 rm -f "$PKG"
-(cd dist && zip -qr9 "$(basename "$PKG")" "$(basename "$OUT")")
+if command -v zip >/dev/null 2>&1; then
+  (cd dist && zip -qr9 "$(basename "$PKG")" "$(basename "$OUT")")
+else
+  PY=$(command -v python3 || command -v python)
+  (cd dist && "$PY" -m zipfile -c "$(basename "$PKG")" "$(basename "$OUT")")
+fi
 rm -rf "$OUT"
 
 echo "✅ Windows 便携版已生成:$(cd dist && pwd)/$(basename "$PKG")"
