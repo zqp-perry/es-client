@@ -1,0 +1,57 @@
+{
+  "name": "es-client",
+  "productName": "ES客户端",
+  "version": "1.0.0",
+  "description": "ES客户端 - 跨平台 Elasticsearch 桌面工具(类数据库客户端,免写 DSL 查数据)",
+  "main": "main.js",
+  "author": "zqp",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "icon": "python3 build/gen_icon.py && bash build/make_icns.sh && bash build/make_ico.sh",
+    "build": "bash build.sh",
+    "dmg": "bash build-dmg.sh",
+    "win": "bash build-win.sh"
+  },
+  "build": {
+    "appId": "com.zqp.esclient",
+    "productName": "ES客户端",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json",
+      "default-connection.json"
+    ],
+    "icon": "build/icon.png",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "ES客户端",
+      "artifactName": "ESClient-Setup-${version}-${arch}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.8.0",
+    "resedit": "^3.1.0"
+  }
+}

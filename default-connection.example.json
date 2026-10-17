@@ -1,0 +1,15 @@
+[
+  {
+    "id": "my-es",
+    "name": "我的 ES 集群",
+    "url": "http://127.0.0.1:9200",
+    "username": "elastic",
+    "password": "changeme",
+    "apiKey": "",
+    "ignoreTLS": false,
+    "timeout": 30000,
+    "whitelistEnabled": false,
+    "whitelist": [],
+    "blockDanger": true
+  }
+]

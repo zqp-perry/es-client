@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:">
+<title>ES 客户端</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="titlebar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="15.5" y1="15.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <span>ES 客户端</span>
+  </div>
+  <div class="conn-bar">
+    <select id="connSelect" title="切换连接"></select>
+    <button id="btnManageConn" class="btn ghost sm">管理连接</button>
+    <span id="connDot" class="dot off" title="未连接"></span>
+    <span id="connInfo">未连接</span>
+  </div>
+</div>
+
+<div id="layout">
+  <nav id="nav">
+    <button class="nav-item active" data-view="overview" title="集群概览">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="3" width="8" height="5" rx="1.5" fill="currentColor" opacity=".75"/><rect x="13" y="10" width="8" height="11" rx="1.5" fill="currentColor" opacity=".75"/><rect x="3" y="13" width="8" height="8" rx="1.5" fill="currentColor"/></svg>
+      <span>概览</span>
+    </button>
+    <button class="nav-item" data-view="browse" title="浏览 / 查询 / 增删改文档">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 9v11M15 9v11" stroke="currentColor" stroke-width="2"/></svg>
+      <span>数据浏览</span>
+    </button>
+    <button class="nav-item" data-view="indices" title="索引管理">
+      <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3" fill="currentColor"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span>索引</span>
+    </button>
+    <button class="nav-item" data-view="query" title="DSL 查询">
+      <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="15.5" y1="15.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>DSL 查询</span>
+    </button>
+    <button class="nav-item" data-view="console" title="任意 API 请求控制台">
+      <svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 9l3.5 3-3.5 3M12.5 15.5h5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>控制台</span>
+    </button>
+    <button class="nav-item" data-view="connections" title="连接管理">
+      <svg viewBox="0 0 24 24"><path d="M8 3v5M16 3v5M4 8h16v4a8 8 0 0 1-16 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 20v2" stroke="currentColor" stroke-width="2"/></svg>
+      <span>连接管理</span>
+    </button>
+  </nav>
+  <main id="main"><div class="loading-block">加载中…</div></main>
+</div>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+<div id="drawerRoot"></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/
+build/cache/
+build/dmg-staging/
+build/ico-tmp/
+.DS_Store
+*.log
