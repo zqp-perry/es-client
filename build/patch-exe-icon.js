@@ -9,6 +9,7 @@ if (!exePath || !fs.existsSync(exePath)) {
   console.error('用法: node build/patch-exe-icon.js <exe>');
   process.exit(1);
 }
+const APP_VERSION = require('../package.json').version || '1.0.0';
 
 const exe = fs.readFileSync(exePath);
 const ne = ResEdit.NtExecutable.from(exe);
@@ -35,8 +36,8 @@ try {
       FileDescription: 'ES客户端 - Elasticsearch 桌面工具',
       OriginalFilename: 'ESClient.exe',
       InternalName: 'ESClient',
-      FileVersion: '1.0.0',
-      ProductVersion: '1.0.0',
+      FileVersion: APP_VERSION,
+      ProductVersion: APP_VERSION,
       LegalCopyright: 'MIT License'
     });
     vi.outputToResourceEntries(rsrc.entries);

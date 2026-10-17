@@ -39,7 +39,7 @@ ES 客户端 v${VERSION} 安装说明
 适用系统:macOS(${ARCH_NOTE})
 EOF
 
-DMG="dist/${APP_NAME}-v${VERSION}-${ARCH}.dmg"
+DMG="dist/ESClient-v${VERSION}-macos-${ARCH}.dmg"
 rm -f "$DMG"
 hdiutil create -volname "${APP_NAME}" -srcfolder "$STAGING" -ov -format UDZO "$DMG" >/dev/null
 rm -rf "$STAGING"

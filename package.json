@@ -1,7 +1,7 @@
 {
   "name": "es-client",
   "productName": "ES客户端",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ES客户端 - 跨平台 Elasticsearch 桌面工具(类数据库客户端,免写 DSL 查数据)",
   "main": "main.js",
   "author": "zqp",
