@@ -259,8 +259,46 @@ function createWindow() {
       sandbox: false
     }
   });
-  mainWindow.once('ready-to-show', () => mainWindow.show());
-  mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+  if (!process.env.SHOTS) mainWindow.once('ready-to-show', () => mainWindow.show());
+  if (process.env.DEMO) {
+    mainWindow.loadURL('file://' + path.join(__dirname, 'renderer', 'index.html') + '?demo=1');
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+  }
+
+  // 截图模式:SHOTS=<目录> 时逐视图截图后退出(用于 README 素材)
+  if (process.env.SHOTS) {
+    mainWindow.webContents.on('did-finish-load', async () => {
+      try {
+        const dir = process.env.SHOTS;
+        const fs2 = require('fs');
+        const path2 = require('path');
+        fs2.mkdirSync(dir, { recursive: true });
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+        await sleep(1500);
+        const shots = [
+          ['overview', 'overview', null],
+          ['browse', 'browse', null],
+          ['indices', 'indices', null],
+          ['query', 'query', "document.querySelector('#qRun') && document.querySelector('#qRun').click()"],
+          ['console', 'console', "document.querySelector('#cRun') && document.querySelector('#cRun').click()"]
+        ];
+        for (const [view, name, extra] of shots) {
+          await mainWindow.webContents.executeJavaScript(`switchView('${view}')`);
+          await sleep(1600);
+          if (extra) { await mainWindow.webContents.executeJavaScript(extra); await sleep(1600); }
+          const img = await mainWindow.webContents.capturePage();
+          fs2.writeFileSync(path2.join(dir, name + '.png'), img.toPNG());
+          console.log('SHOT ' + name);
+        }
+        console.log('SHOTS_DONE');
+        app.exit(0);
+      } catch (e) {
+        console.error('SHOTS_ERR ' + e.message);
+        app.exit(1);
+      }
+    });
+  }
 
   // 冒烟测试模式:加载完成后收集渲染进程错误并退出
   if (process.env.SMOKE) {
