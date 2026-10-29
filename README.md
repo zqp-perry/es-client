@@ -80,8 +80,8 @@ Browse and edit Elasticsearch like a database tool — **zero DSL required**
 
 | 系统 | 文件 | 说明 |
 |---|---|---|
-| macOS (Apple Silicon) | `ESClient-v*-macos-arm64.dmg` | 打开拖入 Applications;首次打开右键→打开 |
-| macOS (Intel) | 下载 universal 版或从源码构建 | |
+| macOS 12+ (Apple Silicon) | `ESClient-v*-macos-arm64.dmg` | 打开拖入 Applications;首次打开右键→打开 |
+| macOS 12+ (Intel) | `ESClient-v*-macos-x64.dmg` | 打开拖入 Applications;首次打开右键→打开 |
 | Windows x64 | `ESClient-v*-win-x64-portable.zip` | 解压直接运行 `ESClient.exe`,免安装 |
 
 <details>
@@ -91,8 +91,11 @@ Browse and edit Elasticsearch like a database tool — **zero DSL required**
 npm install
 npm start          # 开发运行
 npm run dmg        # 打 macOS DMG
+ARCH=x64 npm run dmg # 打 Intel Mac DMG
 npm run win        # 交叉打包 Windows 便携版
 ```
+
+macOS 最低支持 12 Monterey(包含 12.5)。Electron 固定为 43.8.4,避免升级到要求 macOS 13 的 Electron 44+;修改依赖后请重新执行 `npm ci` 并重新打包。构建时会检查 Electron 底座的最低系统要求。
 
 推 tag(`git tag v1.0.2 && git push origin v1.0.2`)即由 GitHub Actions 自动构建并发布双平台安装包。
 </details>

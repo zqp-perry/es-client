@@ -2,28 +2,38 @@
 # 打包为 Mac .app:复制 Electron.app,替换应用代码与图标,改写 Info.plist,放到桌面。
 # 环境变量:
 #   SHARE=1        分享模式:移除内置连接(default-connection.json),安装包不含任何账号密码
-#   ARCH=universal 出通用包(Apple Silicon + Intel);默认 arm64
+#   ARCH=x64      出 Intel 包;默认 arm64(Apple Silicon)
 set -euo pipefail
 cd "$(dirname "$0")"
 
 APP_NAME="ES客户端"
 OUT="dist/${APP_NAME}.app"
 ARCH="${ARCH:-arm64}"
+VERSION=$(node -p "require('./package.json').version")
+VER=$(node -p "require('./node_modules/electron/package.json').version")
+EXPECTED_VER=$(node -p "require('./package.json').devDependencies.electron")
+if [ "$VER" != "$EXPECTED_VER" ]; then
+  echo "❌ Electron 版本不匹配(已安装 $VER,需要 $EXPECTED_VER),请先执行: npm ci"
+  exit 1
+fi
+
+case "$ARCH" in
+  arm64|x64|universal) ;;
+  *) echo "❌ 不支持的架构: $ARCH"; exit 1 ;;
+esac
 
 # 选择 Electron 底座
-SRC_APP="node_modules/electron/dist/Electron.app"   # 本机 npm 安装的(arm64)
-if [ "$ARCH" = "universal" ]; then
-  VER=$(node -p "require('./node_modules/electron/package.json').version")
-  CACHE_DIR="build/cache"
-  UAPP="$CACHE_DIR/Electron-universal.app"
+SRC_APP="node_modules/electron/dist/Electron.app"
+NATIVE_ARCH=$(node -p "process.arch")
+if [ "$ARCH" != "$NATIVE_ARCH" ]; then
+  CACHE_DIR="build/cache/electron-${VER}-darwin-${ARCH}"
+  UAPP="$CACHE_DIR/Electron.app"
   if [ ! -d "$UAPP" ]; then
-    ZIP="electron-v${VER}-darwin-universal.zip"
+    ZIP="electron-v${VER}-darwin-${ARCH}.zip"
     mkdir -p "$CACHE_DIR"
-    echo "下载 Universal 版 Electron($VER)…"
+    echo "下载 ${ARCH} 版 Electron($VER)…"
     curl -fL -o "$CACHE_DIR/$ZIP" "https://npmmirror.com/mirrors/electron/${VER}/${ZIP}"
-    unzip -q "$CACHE_DIR/$ZIP" -d "$CACHE_DIR/universal-tmp"
-    mv "$CACHE_DIR/universal-tmp/Electron.app" "$UAPP"
-    rm -rf "$CACHE_DIR/universal-tmp"
+    unzip -q -o "$CACHE_DIR/$ZIP" -d "$CACHE_DIR"
   fi
   SRC_APP="$UAPP"
 fi
@@ -32,6 +42,16 @@ if [ ! -d "$SRC_APP" ]; then
   echo "❌ 未找到 Electron 二进制($SRC_APP),先执行: npm install"
   exit 1
 fi
+
+# 保留 Electron 自带的系统要求;拒绝打出无法在 macOS 12 上启动的底座。
+MIN_MACOS=$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" "$SRC_APP/Contents/Info.plist")
+node -e '
+  const parts = process.argv[1].split(".").map(Number);
+  if (parts.some(Number.isNaN) || parts[0] > 12 || (parts[0] === 12 && parts.slice(1).some(n => n > 0))) {
+    console.error(`❌ Electron 底座要求 macOS ${process.argv[1]},无法构建 macOS 12 兼容包`);
+    process.exit(1);
+  }
+' "$MIN_MACOS"
 
 rm -rf "$OUT"
 mkdir -p dist
@@ -54,8 +74,8 @@ PLIST="$APP_CONTENTS/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "$PLIST" >/dev/null
 /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APP_NAME}" "$PLIST" >/dev/null
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.zqp.esclient" "$PLIST" >/dev/null
-/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.0.0" "$PLIST" >/dev/null
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion 1.0.0" "$PLIST" >/dev/null
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION}" "$PLIST" >/dev/null
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${VERSION}" "$PLIST" >/dev/null
 
 # 分享模式:移除内置连接(不含任何账号密码,使用者自行配置)
 if [ "${SHARE:-0}" = "1" ]; then

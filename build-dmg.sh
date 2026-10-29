@@ -2,7 +2,7 @@
 # 生成 DMG 安装包(用于分享给同事):
 #   bash build-dmg.sh                 → arm64 分享包(默认,不含内置连接)
 #   KEEP_CONN=1 bash build-dmg.sh     → 保留内置连接(慎用:包含集群账号密码)
-#   ARCH=universal bash build-dmg.sh  → 通用包(Intel + Apple Silicon)
+#   ARCH=x64 bash build-dmg.sh       → Intel 包
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -22,7 +22,8 @@ mkdir -p "$STAGING"
 cp -R "$HOME/Desktop/${APP_NAME}.app" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 
-ARCH_NOTE="芯片 Mac"
+ARCH_NOTE="Apple Silicon 芯片 Mac"
+[ "$ARCH" = "x64" ] && ARCH_NOTE="Intel 芯片 Mac"
 [ "$ARCH" = "universal" ] && ARCH_NOTE="Apple Silicon 和 Intel 芯片 Mac"
 cat > "$STAGING/安装说明.txt" <<EOF
 ES 客户端 v${VERSION} 安装说明
@@ -36,7 +37,7 @@ ES 客户端 v${VERSION} 安装说明
 3. 打开后在「连接管理 → + 新增连接」里填入你的 Elasticsearch 地址和账号即可使用;
 4. 共用集群建议开启「安全防护」:索引白名单 + 屏蔽危险操作(删除/关闭索引)。
 
-适用系统:macOS(${ARCH_NOTE})
+适用系统:macOS 12 Monterey 或更高版本(${ARCH_NOTE})
 EOF
 
 DMG="dist/ESClient-v${VERSION}-macos-${ARCH}.dmg"

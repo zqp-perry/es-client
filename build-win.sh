@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 
 VERSION=$(node -p "require('./package.json').version")
 EVER=$(node -p "require('./node_modules/electron/package.json').version")
-CACHE="build/cache/win-x64"
+CACHE="build/cache/electron-${EVER}-win-x64"
 ZIP="build/cache/electron-v${EVER}-win32-x64.zip"
 
 mkdir -p build/cache
